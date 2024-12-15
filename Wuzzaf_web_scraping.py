@@ -31,6 +31,7 @@ def extract_data(dom,job_search):
     for job in all_jobs:
 
         Job_Title = job.xpath('string(div/div/h2/a)')
+        job_link = job.xpath('string(div/div/h2/a/@href)')
         Company_Name=job.xpath('string(div/div/div/a)')
         Location= job.xpath('string(div/div/div/span)')
         Job_Date = job.xpath('string(div/div/div/div)')
@@ -48,7 +49,8 @@ def extract_data(dom,job_search):
             'Type_Time':Type_Time ,
             'Type_Site': Type_Site,
             'Experience_Type':Experience_Type ,
-            'Experience_Year': Experience_Year
+            'Experience_Year': Experience_Year,
+            'job_link':job_link
         }
         job_list.append(job_data)
     return job_list
@@ -73,14 +75,14 @@ def main():
     dom = fetch_and_parse_html(source_url, headers)
     job_list = extract_data(dom,job_search)
     page_number = get_number_of_pages(dom)
-    save_to_mongodb(job_list, 'Test', 'Wuzzuf_Jobs')
+    save_to_mongodb(job_list, 'test', 'Wuzzuf_Jobs')
 
 
     #using multithreading
     threads = []
     start_time = time.time()
     for i in range(1, page_number):
-        thread = threading.Thread(target=thread_worker, args=(job_search, i, headers, 'Test', 'Wuzzuf_Jobs'))
+        thread = threading.Thread(target=thread_worker, args=(job_search, i, headers, 'test', 'Wuzzuf_Jobs'))
         threads.append(thread)
         thread.start()
 
